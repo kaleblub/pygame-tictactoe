@@ -8,12 +8,6 @@ gameDisplay = pygame.display.set_mode((displayWidth, displayHeight))
 pygame.display.set_caption('Tic-Tac-Toe')
 
 # ----------- Constants -------------------
-white = (255,255,255)
-black = (0,0,0)
-red = (255,0,0)
-green = (0,155,0)
-blue = (0, 0, 255)
-
 font = pygame.font.SysFont(None, 100)
 
 gameOverMessage = """
@@ -32,22 +26,22 @@ for y in (100, 101 + tileSize, 102 + (tileSize*2)):
 		box = pygame.Rect(x, y, tileSize, tileSize)
 		board.append(box) # place each box in the board
 
-def blitMultiLineText(surface, text, pos, font, color=pygame.Color('black')):
+def blitMultiLineText(surface, text, position, font , color=pygame.Color("black")):
     words = [word.split(' ') for word in text.splitlines()]  # 2D array where each row is a list of words.
     space = font.size(' ')[0]  # The width of a space.
-    max_width, max_height = surface.get_size()
-    x, y = pos
+    maxWidth, maxHeight = surface.get_size()
+    x, y = position
     for line in words:
         for word in line:
-            word_surface = font.render(word, 0, color)
-            word_width, word_height = word_surface.get_size()
-            if x + word_width >= max_width:
-                x = pos[0]  # Reset the x.
-                y += word_height  # Start on new row.
-            surface.blit(word_surface, (x, y))
-            x += word_width + space
-        x = pos[0]  # Reset the x.
-        y += word_height  # Start on new row.
+            wordSurface = font.render(word, 0, color)
+            wordWidth, wordHeight = wordSurface.get_size()
+            if x + wordWidth >= maxWidth:
+                x = position[0]  # Reset the x.
+                y += wordHeight  # Start on new row.
+            surface.blit(wordSurface, (x, y))
+            x += wordWidth + space
+        x = position[0]  # Reset the x.
+        y += wordHeight  # Start on new row.
 
 def isGameOver(board):
 	# Check Horizontals
@@ -88,8 +82,8 @@ def spaceIsAvailable(box, trackBoard):
 		return False
 
 # Switches The Current Player
-def switchTurn(turn):
-	if turn == 'x':
+def switchTurn(currentPlayer):
+	if currentPlayer == 'x':
 		return 'o'
 	else:
 		return 'x'
@@ -98,16 +92,16 @@ class Scores:
 	def __init__(self):
 		self.xScore = 0
 		self.oScore = 0
-		self.xScoreMessage = font.render(f'X: {self.xScore}', True, red)
-		self.oScoreMessage = font.render(f'O: {self.oScore}', True, blue)
+		self.xScoreMessage = font.render(f'X: {self.xScore}', True, "red")
+		self.oScoreMessage = font.render(f'O: {self.oScore}', True, "blue")
 	
-	def scoreUpdate(self, player):
-		if player == 'x':
+	def scoreUpdate(self, currentPlayer):
+		if currentPlayer == 'x':
 			self.xScore += 1
-			self.xScoreMessage = font.render(f'X: {self.xScore}', True, red)
+			self.xScoreMessage = font.render(f'X: {self.xScore}', True, "red")
 		else:
 			self.oScore += 1
-			self.oScoreMessage = font.render(f'O: {self.oScore}', True, blue)
+			self.oScoreMessage = font.render(f'O: {self.oScore}', True, "blue")
 
 # Initiate Scores Class Outside Of Main Loop 
 # So That The Scores Are Saved
@@ -119,10 +113,10 @@ def runGame():
 	gameRunning = True
 	gameOver = False
 
-	letter = font.render('X', True, white)
+	letter = font.render('X', True, "white")
 
 	currentPlayer = 'x' # The Turn of the Current Player
-	turnMessage = font.render(f'{currentPlayer.upper()} Turn', True, black)
+	turnMessage = font.render(f'{currentPlayer.upper()} Turn', True, "black")
 
 	trackBoard = [None for i in range(0, 9)] # Board to keep track of X's and O's
 
@@ -131,8 +125,8 @@ def runGame():
 
 # ----------- Game Over Menu -------------
 		while gameOver == True:
-			gameDisplay.fill(white)
-			blitMultiLineText(gameDisplay, gameOverMessage, (20, 20), font, color=red)
+			gameDisplay.fill("white")
+			blitMultiLineText(gameDisplay, gameOverMessage, (20, 20), font, color="red")
 			pygame.display.update()
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
@@ -146,7 +140,7 @@ def runGame():
 					if event.key == pygame.K_c:
 						runGame()
 
-# ------------- Game Handling ----------------
+# ------------- Gameplay Handling ----------------
 		for event in pygame.event.get(): # If the exit button was clicked, exit the game
 			if event.type == pygame.QUIT:
 				gameRunning = False
@@ -155,30 +149,30 @@ def runGame():
 					if box.collidepoint(pygame.mouse.get_pos()) and spaceIsAvailable(box, trackBoard): # Check if it was in a box on the board and if the box is available or not
 						trackBoard[board.index(box)] = currentPlayer 	 # Make the board reflect the current player's choice
 						currentPlayer = switchTurn(currentPlayer)
-						turnMessage = font.render(f'{currentPlayer.upper()} Turn', True, black) # Re-render the turnMessage
+						turnMessage = font.render(f'{currentPlayer.upper()} Turn', True, "black") # Re-render the turnMessage
 						gameOver = isGameOver(trackBoard)
 
 #  ----------- Game Code -------------------
 		# Refresh the screen with white
-		gameDisplay.fill(white)
+		gameDisplay.fill("white")
 
 		# Display the scores of each player
 		gameDisplay.blit(scores.xScoreMessage, (0, 10))
 		gameDisplay.blit(scores.oScoreMessage, (500, 10))
 
-		# Display whos turn it is
+		# Display whose turn it is
 		gameDisplay.blit(turnMessage, (230, 10))
 
-# ------------ Draw The Current Gameboard -------------
+		# Draw The Current Gameboard
 		for box in board:
 			if trackBoard[board.index(box)] == 'x': # if x has previously selected a box, display red
-				pygame.draw.rect(gameDisplay, red, box)
+				pygame.draw.rect(gameDisplay, "red", box)
 			elif trackBoard[board.index(box)] == 'o': # if o has previously selected a box, display blue
-				pygame.draw.rect(gameDisplay, blue, box)
+				pygame.draw.rect(gameDisplay, "blue", box)
 			elif box.collidepoint(pygame.mouse.get_pos()): # if the box is being hovered over, display green
-				pygame.draw.rect(gameDisplay, green, box)
+				pygame.draw.rect(gameDisplay, "green", box)
 			else: 										  # if nothing is/has happened to the box, display black
-				pygame.draw.rect(gameDisplay, black, box)
+				pygame.draw.rect(gameDisplay, "black", box)
 
 		pygame.display.update()
 
